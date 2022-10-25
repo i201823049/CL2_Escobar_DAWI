@@ -23,38 +23,37 @@ import com.cibertec.service.ProductoService;
 @Controller
 @RequestMapping("/")
 public class HomeController {
-	
-	private final Logger log= LoggerFactory.getLogger(HomeController.class);
-	
+
+	private final Logger log = LoggerFactory.getLogger(HomeController.class);
+
 	@Autowired
 	private ProductoService productoService;
-	
-	//Detalles recibo
-	List<DetalleOrden> detalles= new ArrayList<DetalleOrden>();
-	
-	//datos de orden
+
+	// Detalles recibo
+	List<DetalleOrden> detalles = new ArrayList<DetalleOrden>();
+
+	// datos de orden
 	Orden orden = new Orden();
-	
-	
+
 	@GetMapping("")
 	public String home(Model model) {
-		
+
 		model.addAttribute("productos", productoService.findAll());
-		
+
 		return "usuario/home";
 	}
-	
+
 	@GetMapping("productohome/{id}")
 	public String productoHome(@PathVariable Integer id, Model model) {
-		log.info("ID producto enviado como parametro {}",id);
-		
+		log.info("ID producto enviado como parametro {}", id);
+
 		Producto producto = new Producto();
-		Optional<Producto> prodOptional= productoService.get(id);
+		Optional<Producto> prodOptional = productoService.get(id);
 		producto = prodOptional.get();
-		
-		model.addAttribute("producto",producto);
-		
-		return"usuario/productohome";
+
+		model.addAttribute("producto", producto);
+
+		return "usuario/productohome";
 	}
 
 	@PostMapping("/cart")
@@ -62,34 +61,50 @@ public class HomeController {
 		DetalleOrden detalleOrden = new DetalleOrden();
 		Producto producto = new Producto();
 		double sumaTotal = 0;
-		
-		
-		
-		Optional<Producto>optionalProducto = productoService.get(id);
+
+		Optional<Producto> optionalProducto = productoService.get(id);
 		log.info("Producto añadido: {}", optionalProducto.get());
 		log.info("Cantidad: {}", cantidad);
-		
-		producto=optionalProducto.get();
-		
+
+		producto = optionalProducto.get();
+
 		detalleOrden.setCantidad(cantidad);
 		detalleOrden.setPrecio(producto.getPrecio());
 		detalleOrden.setNombre(producto.getNombre());
-		detalleOrden.setTotal(producto.getPrecio()*cantidad);
+		detalleOrden.setTotal(producto.getPrecio() * cantidad);
 		detalleOrden.setProducto(producto);
-		
-		detalles.add(detalleOrden);		
-		
-		sumaTotal=detalles.stream().mapToDouble(dt->dt.getTotal()).sum();
+
+		detalles.add(detalleOrden);
+
+		sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
 		orden.setTotal(sumaTotal);
-		model.addAttribute("cart",detalles);
-		model.addAttribute("orden",orden);
-		
-		
-		
-		
+		model.addAttribute("cart", detalles);
+		model.addAttribute("orden", orden);
+
 		return "usuario/carrito";
 	}
-	
-	
-	
+
+	@GetMapping("/delete/cart/{id}")
+	public String deleteProductoCart(@PathVariable Integer id, Model model) {
+
+		// lista de carrito
+		List<DetalleOrden> ordenesNueva = new ArrayList<DetalleOrden>();
+
+		for (DetalleOrden detalleOrden : detalles) {
+			if (detalleOrden.getProducto().getId() != id) {
+				ordenesNueva.add(detalleOrden);
+			}
+		}
+		//poner la nueva lista
+		detalles=ordenesNueva;
+		
+		double sumaTotal  = 0;
+		sumaTotal = detalles.stream().mapToDouble(dt -> dt.getTotal()).sum();
+		orden.setTotal(sumaTotal);
+		model.addAttribute("cart", detalles);
+		model.addAttribute("orden", orden);
+		
+		return "usuario/carrito";
+
+	}
 }
