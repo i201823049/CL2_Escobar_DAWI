@@ -3,6 +3,7 @@ package com.cibertec.service;
 import java.util.List;
 
 import com.cibertec.model.Orden;
+import com.cibertec.model.Usuario;
 
 public interface IOrdenService {
 	
@@ -13,7 +14,7 @@ public interface IOrdenService {
 	Orden save(Orden orden);
 	
 	String GenerarIdOrden();
-	
+	List<Orden> findByUsuario (Usuario usuario);
 	
 	
 	

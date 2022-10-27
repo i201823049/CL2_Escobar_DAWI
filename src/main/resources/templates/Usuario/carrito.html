@@ -22,10 +22,16 @@
 
 <body>
 
-	<!-- Navigation -->
 
-	<div th:include="usuario/template_usuario.html::header">
+
+  <!-- Navigation -->
+	<!-- Navigation -->
+	<div th:include="usuario/template_usuario.html::header" th:if="${sesion==null}">	
 	</div>
+	
+	<div th:include="usuario/template_usuario.html::header-user" th:unless="${sesion==null}">
+	</div>
+
 
 	<!-- Page Content -->
 	<div class="container">

@@ -1,5 +1,6 @@
 package com.cibertec.control;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
@@ -8,11 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cibertec.model.Orden;
 import com.cibertec.model.Usuario;
+import com.cibertec.service.IOrdenService;
 import com.cibertec.service.IUsuarioService;
 
 @Controller
@@ -23,6 +27,9 @@ public class UsuarioController {
 
 	@Autowired
 	private IUsuarioService usuarioService;
+	
+	@Autowired
+	private IOrdenService ordenService;
 
 	// registo usuario
 	@GetMapping("/registro")
@@ -52,7 +59,7 @@ public class UsuarioController {
 		//logger.info("Usuario de DB: {}", user.get());
 		 
 		if (user.isPresent()) {
-			session.setAttribute("id usuario", user.get().getId());
+			session.setAttribute("idusuario", user.get().getId());
 			
 			if (user.get().getTipo().equals("ADMIN")) {
 				return "redirect:/administrador";
@@ -67,6 +74,22 @@ public class UsuarioController {
 		return "redirect:/";
 		
 	}
+	
+	@GetMapping("/compras")
+	public String obtenerCompras(Model model, HttpSession session) {
+		
+		Usuario usuario = usuarioService.findById(Integer.parseInt(session.getAttribute("idusuario").toString())).get();
+		model.addAttribute("sesion", session.getAttribute("idusuario"));
+		List<Orden> ordenes = ordenService.findByUsuario(usuario);
+		
+		model.addAttribute("ordenes", ordenes);
+		
+		return "usuario/compras";
+		
+	}
+	
+	
+	
 	
 
 }
