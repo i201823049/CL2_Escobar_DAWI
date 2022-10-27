@@ -2,12 +2,16 @@ package com.cibertec.control;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cibertec.model.Orden;
 import com.cibertec.model.Producto;
 import com.cibertec.service.IOrdenService;
 import com.cibertec.service.IUsuarioService;
@@ -17,6 +21,8 @@ import com.cibertec.service.ProductoService;
 @RequestMapping("/administrador")
 
 public class AdministradorController {
+	
+	private Logger logg= LoggerFactory.getLogger(AdministradorController.class);
 
 	@Autowired
 	private ProductoService productoService;
@@ -26,6 +32,8 @@ public class AdministradorController {
 
 	@Autowired
 	private IUsuarioService usuarioService;
+	
+	
 
 	@GetMapping("")
 	public String home(Model model) {
@@ -49,6 +57,16 @@ public class AdministradorController {
 		return "administrador/ordenes";
 	}
 	
+	@GetMapping("/detalle/{id}")
+	public String detalle(Model model, @PathVariable Integer id) {
+		logg.info("Id de la orden {}", id);
+		
+		Orden orden=ordenService.findById(id).get();
+		
+		model.addAttribute("detalles", orden.getDetalle());
+		return "administrador/detalleorden";
+		
+	}
 	
 	
 }

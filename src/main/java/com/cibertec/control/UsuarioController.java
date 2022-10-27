@@ -32,6 +32,9 @@ public class UsuarioController {
 	
 	@Autowired
 	private IOrdenService ordenService;
+	
+	//encryptar password
+//	BCryptPasswordEncoder passEnco = new BCryptPasswordEncoder();
 
 	// registo usuario
 	@GetMapping("/registro")
@@ -43,6 +46,7 @@ public class UsuarioController {
 	public String save(Usuario usuario) {
 		logger.info("Usuario registro: {}", usuario);
 		usuario.setTipo("USER");
+	//	usuario.setPassword(passEnco.encode(usuario.getPassword()));
 		usuarioService.save(usuario);
 
 		return "redirect:/";
