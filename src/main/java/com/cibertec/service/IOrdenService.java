@@ -12,6 +12,8 @@ public interface IOrdenService {
 	
 	Orden save(Orden orden);
 	
+	String GenerarIdOrden();
+	
 	
 	
 	
